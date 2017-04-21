@@ -10,6 +10,9 @@ function deploy-motormart() {
 	/TargetDatabaseName:MotorMartLocal `
 	/TargetServerName:localhost `
 	/p:BlockOnPossibleDataLoss=false
+	
+	# Replace the Live groupPhoneNumber to the DEV number #TODO use SSDT sqlcmd vars
+	osql -d MotorMartLocal -Q "update intranetDepartments set groupPhoneNumber = '0161 xxx xxxx' where departmentId = 'IT'" -E 
 }
 
 #dotnet core
