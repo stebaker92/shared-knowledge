@@ -2,14 +2,14 @@
 function npp($file) { & "C:\Program Files (x86)\Notepad++\notepad++.exe" $file}
 
 #SQL
-function deploy-motormart-noprofile() {
+function deploy-motormart() {
 	cd E:\MotorMart\Carfinance.MotorMart\
-	#msbuild /p:BuildProjectReferences=false .\Carfinance.Motormart.Schema\Carfinance.Motormart.Schema.sqlproj
+	msbuild /p:BuildProjectReferences=false .\Carfinance.Motormart.Schema\Carfinance.Motormart.Schema.sqlproj
 	& "C:\Program Files (x86)\Microsoft SQL Server\130\DAC\bin\SqlPackage.exe" /Action:Publish `
 	/SourceFile:Carfinance.MotorMart.Schema/bin/debug/Carfinance.MotorMart.Schema.dacpac `
 	/TargetDatabaseName:MotorMartLocal `
 	/TargetServerName:localhost `
-	/p:BlockOnPossibleDataLoss=true
+	/p:BlockOnPossibleDataLoss=false
 }
 
 #dotnet core
@@ -34,7 +34,7 @@ function dotnetpublish($service) {
 	#msbuild Carfinance.ContactCentre.Api.xproj /p:target=Publish /p:DeployOnBuild=true /p:PublishDir="E:\MotorMart\_Releases\Test\" /p:Configuration=Debug /p:Platform="Any CPU"
 	dotnet publish "src\${service}.Api" -o E:\MotorMart\_Releases\$service
 	
-	# Inject the secrets
+	# Inject any secrets
 	#$json = Get-Content -path "appKeys.json" -Raw | ConvertFrom-Json
 	#$clientSecret = $json.sites.$service
 		
