@@ -45,4 +45,10 @@ function dotnetpublish($service) {
 	$appsettingsdev = "E:\MotorMart\_Releases\$service\appsettings.development.json"
 	# Replace any incorrect values 
 	if ($appsettings | Test-Path) { (Get-Content $appsettings) | ForEach-Object {$_ -replace "=MotorMart;", "=MotorMartLocal;"} | Set-Content $appsettings }	
+	
+	#Ping the Api to wake it up
+	$bindings = Get-IISSite $service | Select Bindings
+	$url = $bindings.Bindings.protocol + "://" + $bindings.Bindings.bindingInformation.split(":")[2] + ":" + $bindings.Bindings.bindingInformation.split(":")[1]
+	write-host "Pinging $url"
+	Invoke-WebRequest -Uri $url -usebasicParsing | Select StatusCode
 }
