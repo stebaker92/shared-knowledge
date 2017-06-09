@@ -1,4 +1,19 @@
+# PATH
+$env:Path += ";C:\Program Files\7-Zip"
+$env:Path += ";C:\Ruby23\bin\"
+$env:Path += ";E:\ngrok"
+$env:Path += ";C:\program files\nodejs\"
+$env:Path += ";E:\tools\"
+$env:path += ";C:\Program Files (x86)\Microsoft SDKs\TypeScript\2.1\"
+$env:path += ";" + (Get-Item "Env:ProgramFiles(x86)").Value + "\Git\bin"
+$env:path += ";C:\Windows\System32\inetsrv"
+$env:NODE_ENV = "development";
 
+$webDeploy = (get-childitem "HKLM:\SOFTWARE\Microsoft\IIS Extensions\MSDeploy" | Select -last 1).GetValue("InstallPath")
+$env:Path += (";" + $webDeploy)
+	
+	
+# FUNCTIONS 
 function npp($file) { & "C:\Program Files (x86)\Notepad++\notepad++.exe" $file}
 
 #SQL
