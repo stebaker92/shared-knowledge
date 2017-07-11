@@ -67,3 +67,21 @@ function dotnetpublish($service) {
 	write-host "Pinging $url"
 	Invoke-WebRequest -Uri $url -usebasicParsing | Select StatusCode
 }
+
+
+# Helpers
+
+function getrepo () {
+	$repodir = git rev-parse --show-toplevel
+	$repo = Split-Path $repodir -Leaf
+	return $repo;
+}
+
+function regjump($val){
+	$RegEditor_LastKey ="HKCU:Software\Microsoft\Windows\CurrentVersion\Applets\Regedit"
+
+	#Get-ItemProperty -Path $RegEditor_LastKey -Name LastKey
+
+	Set-ItemProperty -Path $RegEditor_LastKey -Name LastKey -Value  $val
+	Start-Process "$env:windir\regedit.exe"
+}
