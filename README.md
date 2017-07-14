@@ -1,5 +1,6 @@
 # profile
 Snippets, profile settings and useful stuffs.
 
-Links
+Links:
+
 [Publishing dotnet core through Visual Studio](dot-net-core-publish.md)
