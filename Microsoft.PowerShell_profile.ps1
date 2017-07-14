@@ -30,6 +30,15 @@ function deploy-motormart() {
 	osql -d MotorMartLocal -Q "update intranetDepartments set groupPhoneNumber = '0161 xxx xxxx' where departmentId = 'IT'" -E 
 }
 
+#dotnet
+
+# searches and opens the solution for the current repo
+function sln() {
+	$repodir = git rev-parse --show-toplevel
+	$sln =  Get-ChildItem $repodir -Filter *.sln | Select-Object -First 1 # Get first .sln item
+	& "${repodir}\${sln}"
+}
+
 #dotnet core
 
 #publishes the Api in the current repo. will attempt to stop it first
