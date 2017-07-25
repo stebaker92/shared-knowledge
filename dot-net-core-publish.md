@@ -1,6 +1,7 @@
 # Publishing dotnet core through Visual Studio
 
 - Download the deploy script: [TODO link / PsGet link]
+- OR Download the dotnet module and `Import-Module DotNet-Helper` in your profile [TODO link / PsGet]
 
 - Tools > External Tools
 Add a new item with the following settings: 
