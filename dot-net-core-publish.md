@@ -1,7 +1,6 @@
 # Publishing dotnet core through Visual Studio
 
-- Download the deploy script: [TODO link / PsGet link]
-- OR Download the [DotNet-Helper](https://raw.githubusercontent.com/stebaker92/profile/master/PowerShell/DotNet-Helper.psm1) module and add the following to your PowerShell profile: (you can access this with `notepad $PROFILE`) - `Import-Module DotNet-Helper`
+- Download the [DotNet-Helper](https://raw.githubusercontent.com/stebaker92/profile/master/PowerShell/DotNet-Helper.psm1) module and add the following to your PowerShell profile: (you can access this with `notepad $PROFILE`) - `Import-Module DotNet-Helper`
 
 - Tools > External Tools
 Add a new item with the following settings: 
