@@ -1,6 +1,7 @@
 
 function dotnetpublish($service) {
-	$folder = getrepo
+	$folder = getrepo #current folder
+	$releasesFolder = "E:\MotorMart\_Releases";
 	
 	$service = if ($service -eq $null) { $folder } else { $service }
 	write-warning "Publishing $service"
@@ -15,28 +16,27 @@ function dotnetpublish($service) {
 	
 	write-warning "Calling dotnet publish"
 	#publish to the _releases folder
-	#msbuild Carfinance.ContactCentre.Api.xproj /p:target=Publish /p:DeployOnBuild=true /p:PublishDir="E:\MotorMart\_Releases\Test\" /p:Configuration=Debug /p:Platform="Any CPU" # asp core RC
-	dotnet publish "src\${service}.Api" -o E:\MotorMart\_Releases\$service
+	#msbuild Carfinance.ContactCentre.Api.xproj /p:target=Publish /p:DeployOnBuild=true /p:PublishDir="$releasesFolder\Test\" /p:Configuration=Debug /p:Platform="Any CPU" # asp core RC
+	dotnet publish "src\${service}.Api" -o $releasesFolder\$service
 	
 	# Set the secrets
 	$jwtSecret = "" # TODO
 	$clientSecret = "" # TODO
 	
-	& "E:\work\PowerShell\Replace-JsonValue.ps1" "E:\MotorMart\_Releases\$service\appsettings.json" -key:"JwtSecret" -value:$jwtSecret
-	& "E:\work\PowerShell\Replace-JsonValue.ps1" "E:\MotorMart\_Releases\$service\appsettings.json" -key:"ClientSecret" -value:$clientSecret
+	& "E:\work\PowerShell\Replace-JsonValue.ps1" "$releasesFolder\$service\appsettings.json" -key:"JwtSecret" -value:$jwtSecret
+	& "E:\work\PowerShell\Replace-JsonValue.ps1" "$releasesFolder\$service\appsettings.json" -key:"ClientSecret" -value:$clientSecret
 	
-  # TODO move this path to a variable
-	$appsettings = "E:\MotorMart\_Releases\$service\appsettings.json"
-	$appsettingsdev = "E:\MotorMart\_Releases\$service\appsettings.development.json"
+	$appsettings = "$releasesFolder\$service\appsettings.json"
+	$appsettingsdev = "$releasesFolder\$service\appsettings.development.json"
   
-  # Fix the incorrect connection strings - some projects are setup WRONG
+        # Fix the incorrect connection strings - some projects are setup WRONG
 	if ($appsettings | Test-Path) { (Get-Content $appsettings) | ForEach-Object {$_ -replace "=MotorMart;", "=MotorMartLocal;"} | Set-Content $appsettings }
 	if ($appsettingsdev | Test-Path) { 
 		(Get-Content $appsettingsdev) | ForEach-Object {$_ -replace "=MotorMart;", "=MotorMartLocal;"} | Set-Content $appsettingsdev 
-		& "E:\work\PowerShell\Replace-JsonValue.ps1" "E:\MotorMart\_Releases\$service\appsettings.development.json" -key:"JwtSecret" -value:$jwtSecret
-		& "E:\work\PowerShell\Replace-JsonValue.ps1" "E:\MotorMart\_Releases\$service\appsettings.development.json" -key:"ClientSecret" -value:$clientSecret
+		& "E:\work\PowerShell\Replace-JsonValue.ps1" "$releasesFolder\$service\appsettings.development.json" -key:"JwtSecret" -value:$jwtSecret
+		& "E:\work\PowerShell\Replace-JsonValue.ps1" "$releasesFolder\$service\appsettings.development.json" -key:"ClientSecret" -value:$clientSecret
 	}
-	if ($service -eq "Carfinance.Application.Info") { (Get-Content "E:\MotorMart\_Releases\$service\${service}.api.exe.config") | ForEach-Object {$_ -replace "{connection-string}", "Data Source=localhost;Initial Catalog=MotorMartLocal;Integrated Security=True;"} | Set-Content "E:\MotorMart\_Releases\$service\${service}.Api.exe.config" }
+	if ($service -eq "Carfinance.Application.Info") { (Get-Content "$releasesFolder\$service\${service}.api.exe.config") | ForEach-Object {$_ -replace "{connection-string}", "Data Source=localhost;Initial Catalog=MotorMartLocal;Integrated Security=True;"} | Set-Content "$releasesFolder\$service\${service}.Api.exe.config" }
 	
 	#Ping the Api to wake it up
 	$bindings = Get-IISSite $service | Select Bindings
