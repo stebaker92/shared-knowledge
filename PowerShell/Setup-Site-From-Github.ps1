@@ -15,11 +15,26 @@ $nugetPath = "E:\tools\";
 $msbuildPath = "C:/Program Files (x86)/MSBuild/14.0/bin";
 
 
-
 # The magic
 
 $env:Path += ";$nugetPath;$msbuildPath"
 
+$orig = get-location
+
+function Clone-Or-Update($repo) {
+    if (Test-Path $repo) {
+        cd $repo
+        git pull
+    }
+    else {
+        echo "cloning $repo"
+        git clone -q "https://github.com/Carfinance247/${repo}.git"
+        cd $repo
+    }
+    cd $orig
+}
+
+function Setup-Site() {
 cd $githubPath
 
 Clone-Or-Update $repo
@@ -28,17 +43,23 @@ if ($isDotNetCore -eq $true) {
     dotnet restore
     dotnet build
 
-    echo "Creating IIS site"
+        echo "Setting up IIS site"
     Start-IISCommitDelay
     
-    $apiDir = "$releasesPath\${repo}";
+
+        # Find the Api folder
+        $result = Get-ChildItem "$githubPath\${repo}" -recurse -Directory| Where-Object {$_.PSIsContainer -and $_.Name.EndsWith("Api")}[0]
+        $apiDir = "$githubPath\${repo}\" + $result[0]
+        
+        echo "Api: $apiDir"
 
     $iisSite = New-IISSite -Name $repo -PhysicalPath $apiDir -Force -BindingInformation "*:${port}:localhost" -Passthru
-	$iisSite.Applications["/"].ApplicationPoolName = "asp core"
+        $iisSite.Applications["/"].ApplicationPoolName = "Phoenix"
 
 	Stop-IISCommitDelay
     echo "Created IIS site"
-} else {
+    }
+    else {
     nuget restore
     msbuild /v:quiet
 
@@ -53,17 +74,11 @@ if ($isDotNetCore -eq $true) {
 }
 
 echo $url
-echo "pinging site..."
-$url = "http://localhost:$port" 
+    $url = "http://localhost:$port/" 
+    echo "pinging site $url..."
 Invoke-WebRequest -Uri $url -usebasicParsing | Select StatusCode, Content
 
-function Clone-Or-Update($repo) {
-    if (Test-Path $repo){
-        cd $repo
-        git pull
-    } else {
-        echo "cloning $repo"
-        git clone -q "https://github.com/Carfinance247/${repo}.git"
-        cd $repo
-    }
+    cd $orig
 }
+
+Setup-Site
